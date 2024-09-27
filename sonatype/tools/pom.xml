@@ -183,8 +183,8 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <source>${java.compiler.version}</source>
-                    <target>${java.compiler.version}</target>
+                    <source>16</source>
+                    <target>16</target>
                     <annotationProcessorPaths>
                         <annotationProcessorPath>
                             <groupId>org.projectlombok</groupId>

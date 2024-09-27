@@ -78,6 +78,29 @@ public interface LocalCache {
     void del(String key);
 
     /**
+     * #brief: 获取缓存值
+     *
+     * <p>根据键获取对应的缓存值。如果不存在该键，返回 `null`。
+     *
+     * @param key 缓存键
+     * @param <R> 返回值类型
+     * @return 对应的缓存值
+     */
+    <R> R get(String key);
+
+    /**
+     * #brief: 获取缓存值并应用映射器
+     *
+     * <p>根据键获取对应的缓存值，并通过映射器转换返回值。如果不存在该键，返回 `null`。
+     *
+     * @param key 缓存键
+     * @param mapper 映射器
+     * @param <R> 返回值类型
+     * @return 映射后的缓存值
+     */
+    <R> R get(String key, StreamMapper<Object, R> mapper);
+
+    /**
      * #brief: 设置哈希缓存值
      *
      * <p>将指定名称的值存入指定键的哈希缓存。如果哈希中已存在该名称的值，则会覆盖原有值。
@@ -122,6 +145,31 @@ public interface LocalCache {
      * @param name 哈希中值的名称
      */
     void hdel(String key, String name);
+
+    /**
+     * #brief: 获取哈希缓存值
+     *
+     * <p>根据键和名称获取对应的哈希缓存值。如果不存在该键或名称，返回 `null`。
+     *
+     * @param key 哈希缓存键
+     * @param name 哈希中值的名称
+     * @param <R> 返回值类型
+     * @return 对应的哈希缓存值
+     */
+    <R> R hget(String key, String name);
+
+    /**
+     * #brief: 获取哈希缓存值并应用映射器
+     *
+     * <p>根据键和名称获取对应的哈希缓存值，并通过映射器转换返回值。如果不存在该键或名称，返回 `null`。
+     *
+     * @param key 哈希缓存键
+     * @param name 哈希中值的名称
+     * @param mapper 映射器
+     * @param <R> 返回值类型
+     * @return 映射后的哈希缓存值
+     */
+    <R> R hget(String key, String name, StreamMapper<Object, R> mapper);
 
     /**
      * #brief: 从列表前端推入元素
@@ -190,6 +238,54 @@ public interface LocalCache {
     void pushback(String key, Object value, long expire, TimeUnitOperator timeUnitOperator);
 
     /**
+     * #brief: 从列表前端弹出元素
+     *
+     * <p>从指定键的列表前端弹出元素。如果列表为空，返回 `null`。
+     *
+     * @param key 列表缓存键
+     * @param <R> 返回值类型
+     * @return 被弹出的元素
+     */
+    <R> R popstart(String key);
+
+    /**
+     * #brief: 从列表后端弹出元素
+     *
+     * <p>从指定键的列表后端弹出元素。如果列表为空，返回 `null`。
+     *
+     * @param key 列表缓存键
+     * @param <R> 返回值类型
+     * @return 被弹出的元素
+     */
+    <R> R popback(String key);
+
+    /**
+     * #brief: 获取列表指定索引的元素
+     *
+     * <p>根据键获取指定索引的列表元素。如果索引超出范围，返回 `null`。
+     *
+     * @param key 列表缓存键
+     * @param index 元素索引
+     * @param <R> 返回值类型
+     * @return 指定索引的元素
+     */
+    <R> R lrange(String key, int index);
+
+    /**
+     * #brief: 获取列表指定范围的元素
+     *
+     * <p>根据键获取指定范围内的列表元素。如果范围超出，则返回实际存在的元素。
+     *
+     * @param key 列表缓存键
+     * @param begin 开始索引
+     * @param end 结束索引
+     * @param <R> 返回值类型
+     * @return 指定范围内的元素列表
+     */
+    <R> List<R> lrange(String key, int begin, int end);
+
+
+    /**
      * #brief: 将元素添加到集合
      *
      * <p>将指定元素添加到集合中。如果集合中已存在该元素，则不做任何操作。
@@ -255,99 +351,7 @@ public interface LocalCache {
      */
     <R> R sget(String key, StreamMapper<Object, R> mapper);
 
-    /**
-     * #brief: 从列表前端弹出元素
-     *
-     * <p>从指定键的列表前端弹出元素。如果列表为空，返回 `null`。
-     *
-     * @param key 列表缓存键
-     * @param <R> 返回值类型
-     * @return 被弹出的元素
-     */
-    <R> R popstart(String key);
+    void close();
 
-    /**
-     * #brief: 从列表后端弹出元素
-     *
-     * <p>从指定键的列表后端弹出元素。如果列表为空，返回 `null`。
-     *
-     * @param key 列表缓存键
-     * @param <R> 返回值类型
-     * @return 被弹出的元素
-     */
-    <R> R popback(String key);
-
-    /**
-     * #brief: 获取列表指定索引的元素
-     *
-     * <p>根据键获取指定索引的列表元素。如果索引超出范围，返回 `null`。
-     *
-     * @param key 列表缓存键
-     * @param index 元素索引
-     * @param <R> 返回值类型
-     * @return 指定索引的元素
-     */
-    <R> R lrange(String key, int index);
-
-    /**
-     * #brief: 获取列表指定范围的元素
-     *
-     * <p>根据键获取指定范围内的列表元素。如果范围超出，则返回实际存在的元素。
-     *
-     * @param key 列表缓存键
-     * @param begin 开始索引
-     * @param end 结束索引
-     * @param <R> 返回值类型
-     * @return 指定范围内的元素列表
-     */
-    <R> List<R> lrange(String key, int begin, int end);
-
-    /**
-     * #brief: 获取缓存值
-     *
-     * <p>根据键获取对应的缓存值。如果不存在该键，返回 `null`。
-     *
-     * @param key 缓存键
-     * @param <R> 返回值类型
-     * @return 对应的缓存值
-     */
-    <R> R get(String key);
-
-    /**
-     * #brief: 获取缓存值并应用映射器
-     *
-     * <p>根据键获取对应的缓存值，并通过映射器转换返回值。如果不存在该键，返回 `null`。
-     *
-     * @param key 缓存键
-     * @param mapper 映射器
-     * @param <R> 返回值类型
-     * @return 映射后的缓存值
-     */
-    <R> R get(String key, StreamMapper<Object, R> mapper);
-
-    /**
-     * #brief: 获取哈希缓存值
-     *
-     * <p>根据键和名称获取对应的哈希缓存值。如果不存在该键或名称，返回 `null`。
-     *
-     * @param key 哈希缓存键
-     * @param name 哈希中值的名称
-     * @param <R> 返回值类型
-     * @return 对应的哈希缓存值
-     */
-    <R> R hget(String key, String name);
-
-    /**
-     * #brief: 获取哈希缓存值并应用映射器
-     *
-     * <p>根据键和名称获取对应的哈希缓存值，并通过映射器转换返回值。如果不存在该键或名称，返回 `null`。
-     *
-     * @param key 哈希缓存键
-     * @param name 哈希中值的名称
-     * @param mapper 映射器
-     * @param <R> 返回值类型
-     * @return 映射后的哈希缓存值
-     */
-    <R> R hget(String key, String name, StreamMapper<Object, R> mapper);
 }
 
